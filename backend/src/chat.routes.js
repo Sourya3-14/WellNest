@@ -1,7 +1,7 @@
 import express from "express";
 import mongoose from "mongoose"; // Missing import
-import Chat from "../models/Chats.js";
-import { authRequired } from "../middlewares/auth.js";
+import Chat from "./models/Chats.js";
+import { authRequired } from "./middlewares/auth.js";
 
 const router = express.Router();
 
