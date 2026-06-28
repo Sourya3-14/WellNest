@@ -19,7 +19,6 @@ import {
   DollarSign,
 } from "lucide-react";
 
-import "../../styles/event-styles/OrganizeEventForm.css";
 import Navbar from "../../components/Navbar.jsx";
 import { blockchainApi } from "../../utils/api.js";
 import { removeToken } from "../../utils/auth.js";
@@ -174,7 +173,7 @@ const OrganizeEventForm = () => {
         parseInt(startHours),
         parseInt(startMinutes),
         0,
-        0
+        0,
       );
 
       const endDateTime = new Date(eventDate);
@@ -215,7 +214,7 @@ const OrganizeEventForm = () => {
       console.error("Error creating event:", error);
       setStatus("error");
       setPopupMessage(
-        error.response?.data?.error || "Something went wrong. Try again."
+        error.response?.data?.error || "Something went wrong. Try again.",
       );
       setShowPopup(true);
       setTimeout(() => setShowPopup(false), 3000);

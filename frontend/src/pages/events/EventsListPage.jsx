@@ -15,7 +15,6 @@ import {
   DollarSign,
 } from "lucide-react";
 
-import "../../styles/event-styles/EventListPage.css";
 import Navbar from "../../components/Navbar.jsx";
 import DonationPopup from "../../components/DonationPopup.jsx";
 import { blockchainApi } from "../../utils/api.js"; // use axios instance
@@ -79,7 +78,7 @@ const EventsListPage = () => {
 
   const saveDonationAmount = (eventId, amount) => {
     const currentAmounts = JSON.parse(
-      localStorage.getItem("donationAmounts") || "{}"
+      localStorage.getItem("donationAmounts") || "{}",
     );
     currentAmounts[eventId] = (currentAmounts[eventId] || 0) + amount;
     localStorage.setItem("donationAmounts", JSON.stringify(currentAmounts));
@@ -132,14 +131,14 @@ const EventsListPage = () => {
           fetched.map(async (e) => {
             try {
               const { data: d } = await blockchainApi.get(
-                `/part/participants/${e._id}`
+                `/part/participants/${e._id}`,
               );
               return [e._id, d.success ? (d.participants || []).length : 0];
             } catch (err) {
               alert("Error fetching participants for event " + e._id);
               return [e._id, 0];
             }
-          })
+          }),
         );
         setParticipantsCounts(Object.fromEntries(counts));
       } else {
@@ -195,7 +194,7 @@ const EventsListPage = () => {
         // Save donation amount locally
         saveDonationAmount(selectedEvent._id, amount);
         alert(
-          `Donation successful! You received ${rewardTokens} reward tokens.`
+          `Donation successful! You received ${rewardTokens} reward tokens.`,
         );
       } else {
         throw new Error(response.data.error || "Donation failed");
@@ -236,7 +235,7 @@ const EventsListPage = () => {
           alert(
             `Delete failed with status ${err.response.status}: ${
               err.response.data?.error || err.message
-            }`
+            }`,
           );
         }
       } else if (err.request) {
@@ -352,10 +351,10 @@ const EventsListPage = () => {
               ) {
                 // Time strings like "14:30"
                 eventStart = new Date(
-                  `${event.date.split("T")[0]}T${event.startTime}`
+                  `${event.date.split("T")[0]}T${event.startTime}`,
                 );
                 eventEnd = new Date(
-                  `${event.date.split("T")[0]}T${event.endTime}`
+                  `${event.date.split("T")[0]}T${event.endTime}`,
                 );
               } else {
                 // Fallback

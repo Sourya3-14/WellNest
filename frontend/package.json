@@ -10,14 +10,20 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@tailwindcss/vite": "^4.3.1",
     "@tanstack/react-query": "^5.85.3",
     "@walletconnect/ethereum-provider": "^2.21.8",
     "axios": "^1.11.0",
+    "connectkit": "^1.9.2",
     "lucide-react": "^0.539.0",
     "qrcode": "^1.5.4",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
+    "react-markdown": "^10.1.0",
     "react-router-dom": "^7.8.1",
+    "react-syntax-highlighter": "^16.1.1",
+    "remark-gfm": "^4.0.1",
+    "tailwindcss": "^4.3.1",
     "viem": "^2.33.3",
     "wagmi": "^2.16.3"
   },

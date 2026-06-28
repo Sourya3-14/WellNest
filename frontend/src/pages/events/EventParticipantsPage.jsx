@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams, useLocation } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
-import "../../styles/event-styles/EventParticipantsPage.css";
 import Navbar from "../../components/Navbar.jsx";
 import { blockchainApi } from "../../utils/api.js"; // ✅ Axios instance
 
@@ -26,7 +25,7 @@ const EventParticipantsPage = () => {
         const eventResp = await blockchainApi.get("/organise/all");
         if (eventResp.data.success) {
           const evt = (eventResp.data.orgs || []).find(
-            (e) => e._id === eventId
+            (e) => e._id === eventId,
           );
           setEventDetails(evt || null);
         }
@@ -53,8 +52,8 @@ const EventParticipantsPage = () => {
       if (resp.data.success) {
         setParticipants((prev) =>
           prev.map((p) =>
-            p._id === participantId ? { ...p, verified: true } : p
-          )
+            p._id === participantId ? { ...p, verified: true } : p,
+          ),
         );
       } else {
         alert(resp.data.error || "Verification failed");
@@ -105,7 +104,7 @@ const EventParticipantsPage = () => {
                   <div>
                     <strong>Time:</strong>{" "}
                     {new Date(
-                      `2000-01-01T${eventDetails.startTime}`
+                      `2000-01-01T${eventDetails.startTime}`,
                     ).toLocaleTimeString("en-US", {
                       hour: "numeric",
                       minute: "2-digit",
@@ -113,7 +112,7 @@ const EventParticipantsPage = () => {
                     })}
                     {" - "}
                     {new Date(
-                      `2000-01-01T${eventDetails.endTime}`
+                      `2000-01-01T${eventDetails.endTime}`,
                     ).toLocaleTimeString("en-US", {
                       hour: "numeric",
                       minute: "2-digit",
@@ -156,13 +155,13 @@ const EventParticipantsPage = () => {
                   </td>
                   {canVerify && (
                     <td>
-                        <button
-                          className="verify-button"
-                          onClick={() => handleVerifyParticipant(p._id)}
-                          disabled={verifying === p._id || p.verified}
-                        >
-                          Verify
-                        </button>
+                      <button
+                        className="verify-button"
+                        onClick={() => handleVerifyParticipant(p._id)}
+                        disabled={verifying === p._id || p.verified}
+                      >
+                        Verify
+                      </button>
                     </td>
                   )}
                 </tr>

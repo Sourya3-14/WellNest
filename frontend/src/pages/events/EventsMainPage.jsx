@@ -11,7 +11,6 @@ import {
   Award,
   TrendingUp,
 } from "lucide-react";
-import "../../styles/event-styles/EventsMainPage.css";
 import Navbar from "../../components/Navbar.jsx";
 import { blockchainApi } from "../../utils/api.js";
 
@@ -141,12 +140,12 @@ const EventsMainPage = () => {
             try {
               console.log(`Fetching participants for event ${event._id}`);
               const participantResponse = await blockchainApi.get(
-                `/part/participants/${event._id}`
+                `/part/participants/${event._id}`,
               );
 
               console.log(
                 `Participant response for event ${event._id}:`,
-                participantResponse.data
+                participantResponse.data,
               );
 
               if (
@@ -159,15 +158,14 @@ const EventsMainPage = () => {
             } catch (error) {
               console.error(
                 `Error fetching participants for event ${event._id}:`,
-                error.response?.data || error.message
+                error.response?.data || error.message,
               );
               return 0;
             }
           });
 
-          const participantCounts = await Promise.allSettled(
-            participantPromises
-          );
+          const participantCounts =
+            await Promise.allSettled(participantPromises);
 
           // Sum up all participant counts
           totalParticipants = participantCounts.reduce((sum, result) => {

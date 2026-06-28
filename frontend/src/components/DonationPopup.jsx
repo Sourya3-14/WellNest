@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { X, DollarSign, Gift, QrCode } from "lucide-react";
 import QRCode from "qrcode";
-import "../styles/event-styles/DonationPopup.css";
 
 const DonationPopup = ({ isOpen, onClose, eventDetails, onDonate }) => {
   const [amount, setAmount] = useState("");
