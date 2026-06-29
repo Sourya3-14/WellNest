@@ -1,16 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import {
-  Calendar,
-  Heart,
-  Droplets,
-  Plus,
-  Truck,
-  Apple,
-  Users,
-  Award,
-  TrendingUp,
-} from "lucide-react";
+import { Calendar, Heart, Droplets, Plus, Truck, Apple, Users, Award, TrendingUp } from "lucide-react";
 import Navbar from "../../components/Navbar.jsx";
 import { blockchainApi } from "../../utils/api.js";
 
@@ -28,44 +18,50 @@ const EventsMainPage = () => {
     {
       id: "health-checkup",
       name: "Free Health CheckUp",
-      icon: <Heart className="icon" />,
-      color: "blue",
+      icon: <Heart className="w-5 h-5 text-sky-600" />,
+      bgClass: "hover:border-sky-300 hover:bg-sky-50/30",
+      iconBg: "bg-sky-50 text-sky-600 border-sky-100",
       description: "Comprehensive health screening and checkup services",
     },
     {
       id: "vaccination",
       name: "Vaccination Drive",
-      icon: <Plus className="icon" />,
-      color: "green",
+      icon: <Plus className="w-5 h-5 text-emerald-600" />,
+      bgClass: "hover:border-emerald-300 hover:bg-emerald-50/30",
+      iconBg: "bg-emerald-50 text-emerald-600 border-emerald-100",
       description: "Immunization programs for various diseases",
     },
     {
       id: "blood-donation",
       name: "Blood Donation Camp",
-      icon: <Droplets className="icon" />,
-      color: "red",
+      icon: <Droplets className="w-5 h-5 text-rose-600" />,
+      bgClass: "hover:border-rose-300 hover:bg-rose-50/30",
+      iconBg: "bg-rose-50 text-rose-600 border-rose-100",
       description: "Blood donation drives with crypto rewards",
       hasRewards: true,
     },
     {
       id: "mobile-health",
       name: "Mobile Health Camp",
-      icon: <Truck className="icon" />,
-      color: "purple",
+      icon: <Truck className="w-5 h-5 text-indigo-600" />,
+      bgClass: "hover:border-indigo-300 hover:bg-indigo-50/30",
+      iconBg: "bg-indigo-50 text-indigo-600 border-indigo-100",
       description: "Healthcare services in remote and underserved areas",
     },
     {
       id: "nutrition",
       name: "Nutrition & Diet Camps",
-      icon: <Apple className="icon" />,
-      color: "orange",
+      icon: <Apple className="w-5 h-5 text-amber-600" />,
+      bgClass: "hover:border-amber-300 hover:bg-amber-50/30",
+      iconBg: "bg-amber-50 text-amber-600 border-amber-100",
       description: "Nutritional counseling and dietary guidance",
     },
     {
       id: "other",
       name: "Other Events",
-      icon: <Calendar className="icon" />,
-      color: "gray",
+      icon: <Calendar className="w-5 h-5 text-slate-500" />,
+      bgClass: "hover:border-slate-400 hover:bg-slate-50/50",
+      iconBg: "bg-slate-100 text-slate-600 border-slate-200",
       description: "Miscellaneous healthcare events and programs",
     },
   ];
@@ -86,316 +82,232 @@ const EventsMainPage = () => {
 
   const fetchStats = async () => {
     try {
-      console.log("=== DEBUGGING STATS FETCH ===");
-      console.log("Making request to: /organise/all");
-
-      // Use blockchainApi for the organise endpoint (port 8000)
       const response = await blockchainApi.get("/organise/all", {
-        // Override the Authorization header for this specific request since /all doesn't require auth
         headers: {
           Authorization: undefined,
         },
       });
 
-      console.log("Response status:", response.status);
-      console.log("=== FULL API RESPONSE ===");
-      console.log(JSON.stringify(response.data, null, 2));
-
       const data = response.data;
 
       if (data.success && data.orgs) {
         const events = data.orgs;
-        console.log("=== EVENTS DATA ===");
-        console.log("Number of events:", events.length);
-        console.log("Events:", events);
-
         const now = new Date();
-        console.log("Current date:", now.toISOString());
 
-        // Debug each event date
-        events.forEach((event, index) => {
-          const eventDate = new Date(event.date);
-          console.log(`Event ${index + 1}:`);
-          console.log(`  - Date string: ${event.date}`);
-          console.log(`  - Parsed date: ${eventDate.toISOString()}`);
-          console.log(`  - Is future: ${eventDate > now}`);
-          console.log(`  - Event ID: ${event._id}`);
-        });
-
-        // Count upcoming events
         const upcoming = events.filter((event) => {
           const eventDate = new Date(event.date);
           return eventDate > now;
         }).length;
 
-        console.log("=== UPCOMING EVENTS CALCULATION ===");
-        console.log("Upcoming events count:", upcoming);
-
-        // Get participant counts for all events
         let totalParticipants = 0;
 
         try {
-          // Use Promise.allSettled to handle any failed requests gracefully
           const participantPromises = events.map(async (event) => {
             try {
-              console.log(`Fetching participants for event ${event._id}`);
-              const participantResponse = await blockchainApi.get(
-                `/part/participants/${event._id}`,
-              );
-
-              console.log(
-                `Participant response for event ${event._id}:`,
-                participantResponse.data,
-              );
-
-              if (
-                participantResponse.data.success &&
-                participantResponse.data.participants
-              ) {
+              const participantResponse = await blockchainApi.get(`/part/participants/${event._id}`);
+              if (participantResponse.data.success && participantResponse.data.participants) {
                 return participantResponse.data.participants.length;
               }
               return 0;
             } catch (error) {
-              console.error(
-                `Error fetching participants for event ${event._id}:`,
-                error.response?.data || error.message,
-              );
               return 0;
             }
           });
 
-          const participantCounts =
-            await Promise.allSettled(participantPromises);
+          const participantCounts = await Promise.allSettled(participantPromises);
 
-          // Sum up all participant counts
           totalParticipants = participantCounts.reduce((sum, result) => {
             if (result.status === "fulfilled") {
               return sum + result.value;
             }
             return sum;
           }, 0);
-
-          console.log("=== PARTICIPANTS CALCULATION ===");
-          console.log("Participant counts:", participantCounts);
-          console.log("Total participants:", totalParticipants);
         } catch (participantError) {
-          console.error("Error in participant calculation:", participantError);
-          // Fallback: set to test value if participant fetching fails
           totalParticipants = events.length * 2;
-          console.log("Using fallback participant count:", totalParticipants);
         }
 
-        console.log("=== FINAL STATS ===");
-        const finalStats = {
+        setStats({
           totalEvents: events.length,
           totalParticipants,
           upcomingEvents: upcoming,
-        };
-        console.log("Final stats:", finalStats);
-
-        setStats(finalStats);
-      } else {
-        console.error("=== API RESPONSE ERROR ===");
-        console.error("data.success:", data.success);
-        console.error("data.orgs:", data.orgs);
-        console.error("Full response:", data);
-
-        // Set stats to 0 if API response is invalid
-        setStats({
-          totalEvents: 0,
-          totalParticipants: 0,
-          upcomingEvents: 0,
         });
+      } else {
+        setStats({ totalEvents: 0, totalParticipants: 0, upcomingEvents: 0 });
       }
     } catch (error) {
-      console.error("=== FETCH ERROR ===");
-      console.error("Error details:", error.response?.data || error.message);
-      console.error("Error status:", error.response?.status);
-
-      // Set stats to 0 in case of error
-      setStats({
-        totalEvents: 0,
-        totalParticipants: 0,
-        upcomingEvents: 0,
-      });
+      setStats({ totalEvents: 0, totalParticipants: 0, upcomingEvents: 0 });
     }
   };
 
   const handleEventSelect = (eventType, eventName) => {
-    // Frontend route, this page should fetch event list from /organise/all
     navigate(`/events/${eventType}`, {
       state: { eventTypeName: eventName, userRole, userId },
     });
   };
 
   const handleOrganizeEvent = (eventType, eventName) => {
-    // Organize form -> will call POST /organise/set in that page
     navigate(`/events/organize/${eventType}`, {
       state: { eventTypeName: eventName },
     });
   };
 
   const handleLogout = () => {
-    localStorage.removeToken();
+    localStorage.removeItem("token");
     navigate("/signin");
   };
 
   return (
-    <div className="page">
+    <div className="min-h-screen bg-slate-50 text-slate-900 font-sans antialiased">
       <Navbar onLogout={handleLogout} />
-      <div className="events-page">
-        {/* Header */}
-        <div className="header">
-          <div className="header-inner">
+
+      {/* Top Hero Banner Section */}
+      <header className="bg-white border-b border-slate-200 py-8 shadow-sm">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
-              <h1 className="page-title">Healthcare Events</h1>
-              <p className="page-subtitle">
-                Discover and participate in healthcare events in your community
-              </p>
+              <h1 className="text-3xl font-bold tracking-tight text-slate-900">Healthcare Events</h1>
+              <p className="text-sm text-slate-500 mt-1">Discover and participate in healthcare events in your community</p>
             </div>
             {canOrganize && (
-              <div className="organize-badge">✨ You can organize events</div>
+              <div className="inline-flex items-center gap-1.5 self-start sm:self-center px-3 py-1.5 bg-amber-50 text-amber-800 border border-amber-200 rounded-lg text-xs font-semibold shadow-sm">
+                <span>✨ Authorized Organizer Mode</span>
+              </div>
             )}
           </div>
         </div>
+      </header>
 
-        <div className="content">
-          {/* Stats Cards */}
-          <div className="stats-grid">
-            <div className="stat-card">
-              <Calendar className="stat-icon blue" />
-              <div>
-                <h3 className="stat-title">Total Events</h3>
-                <p className="stat-value blue">{stats.totalEvents}</p>
-              </div>
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-12">
+        {/* Core Platform Analytics Dashboard */}
+        <section className="grid grid-cols-1 sm:grid-cols-3 gap-5">
+          <div className="bg-white border border-slate-200 p-5 rounded-xl shadow-sm flex items-center gap-4">
+            <div className="p-3 bg-sky-50 text-sky-600 border border-sky-100 rounded-xl">
+              <Calendar className="w-5 h-5" />
             </div>
-            <div className="stat-card">
-              <Users className="stat-icon green" />
-              <div>
-                <h3 className="stat-title">Participants</h3>
-                <p className="stat-value green">{stats.totalParticipants}</p>
-              </div>
-            </div>
-            <div className="stat-card">
-              <TrendingUp className="stat-icon purple" />
-              <div>
-                <h3 className="stat-title">Upcoming</h3>
-                <p className="stat-value purple">{stats.upcomingEvents}</p>
-              </div>
+            <div>
+              <p className="text-xs font-medium text-slate-500 uppercase tracking-wider">Total Events</p>
+              <p className="text-2xl font-bold text-slate-900 mt-0.5">{stats.totalEvents}</p>
             </div>
           </div>
 
-          {/* Event Types */}
-          <div className="events-section">
-            <h2 className="section-title">Browse Events by Category</h2>
-            <div className="events-grid">
-              {eventTypes.map((event) => (
-                <div
-                  key={event.id}
-                  className={`event-card ${event.color}`}
-                  onClick={() => handleEventSelect(event.id, event.name)}
-                >
-                  <div className="event-card-inner">
-                    <div className={`event-icon ${event.color}`}>
-                      {event.icon}
-                    </div>
+          <div className="bg-white border border-slate-200 p-5 rounded-xl shadow-sm flex items-center gap-4">
+            <div className="p-3 bg-emerald-50 text-emerald-600 border border-emerald-100 rounded-xl">
+              <Users className="w-5 h-5" />
+            </div>
+            <div>
+              <p className="text-xs font-medium text-slate-500 uppercase tracking-wider">Total Registrations</p>
+              <p className="text-2xl font-bold text-slate-900 mt-0.5">{stats.totalParticipants}</p>
+            </div>
+          </div>
+
+          <div className="bg-white border border-slate-200 p-5 rounded-xl shadow-sm flex items-center gap-4">
+            <div className="p-3 bg-indigo-50 text-indigo-600 border border-indigo-100 rounded-xl">
+              <TrendingUp className="w-5 h-5" />
+            </div>
+            <div>
+              <p className="text-xs font-medium text-slate-500 uppercase tracking-wider">Active & Upcoming</p>
+              <p className="text-2xl font-bold text-slate-900 mt-0.5">{stats.upcomingEvents}</p>
+            </div>
+          </div>
+        </section>
+
+        {/* Categories Browsing Architecture */}
+        <section className="space-y-4">
+          <h2 className="text-lg font-bold text-slate-900 tracking-tight">Browse Events by Category</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+            {eventTypes.map((event) => (
+              <div key={event.id} onClick={() => handleEventSelect(event.id, event.name)} className={`bg-white border border-slate-200 p-5 rounded-xl shadow-sm cursor-pointer flex flex-col justify-between transition duration-200 relative group overflow-hidden ${event.bgClass}`}>
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <div className={`p-2.5 rounded-lg border ${event.iconBg}`}>{event.icon}</div>
                     {event.hasRewards && (
-                      <div className="reward-badge">
-                        <Award className="reward-icon" />
+                      <div className="p-1.5 bg-rose-50 text-rose-600 rounded-lg border border-rose-100">
+                        <Award className="w-4 h-4 animate-pulse" />
                       </div>
                     )}
                   </div>
-                  <h3 className="event-name">{event.name}</h3>
-                  <p className="event-desc">{event.description}</p>
-                  {event.hasRewards && (
-                    <div className="crypto-reward">
-                      💰 Crypto rewards available
-                    </div>
-                  )}
+                  <div>
+                    <h3 className="text-base font-bold text-slate-800 tracking-tight group-hover:text-slate-900 transition">{event.name}</h3>
+                    <p className="text-xs text-slate-500 mt-1.5 leading-relaxed">{event.description}</p>
+                  </div>
                 </div>
+
+                {event.hasRewards && (
+                  <div className="mt-4 pt-3 border-t border-slate-100 flex items-center gap-1.5 text-[11px] font-bold text-rose-600 tracking-wide uppercase">
+                    <span>🪙 Web3 Incentive Tokens Enabled</span>
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* Organizer Module Access Point */}
+        {canOrganize && (
+          <section className="space-y-4 bg-slate-900 text-white p-6 sm:p-8 rounded-2xl shadow-md border border-slate-800">
+            <div>
+              <h2 className="text-xl font-bold tracking-tight">Organize an Event</h2>
+              <p className="text-xs text-slate-400 mt-1">Select an active operational index structure below to spin up a community health initiative</p>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5 pt-4">
+              {eventTypes.map((event) => (
+                <button key={`organize-${event.id}`} onClick={() => handleOrganizeEvent(event.id, event.name)} className="flex items-center justify-between p-3.5 bg-slate-800 border border-slate-700 hover:border-slate-500 rounded-xl transition text-left group">
+                  <div className="flex items-center gap-3">
+                    <span className="p-2 bg-slate-700/60 rounded-lg shrink-0 border border-slate-600/50">{event.icon}</span>
+                    <span className="text-xs font-semibold text-slate-200 group-hover:text-white transition">Create {event.name}</span>
+                  </div>
+                  <Plus className="w-4 h-4 text-slate-500 group-hover:text-white transition shrink-0" />
+                </button>
               ))}
             </div>
-          </div>
+          </section>
+        )}
 
-          {/* Organize Events */}
-          {canOrganize && (
-            <div className="organize-section">
-              <div className="organize-header">
-                <h2 className="section-title">Organize an Event</h2>
-                <p className="section-subtitle">
-                  Create and manage healthcare events for your community
-                </p>
-              </div>
-              <div className="organize-grid">
-                {eventTypes.map((event) => (
-                  <button
-                    key={`organize-${event.id}`}
-                    onClick={() => handleOrganizeEvent(event.id, event.name)}
-                    className="organize-card"
-                  >
-                    <span className={`organize-icon ${event.color}`}>
-                      {event.icon}
-                    </span>
-                    <div className="organize-text">Organize {event.name}</div>
-                    <Plus className="plus-icon" />
-                  </button>
+        {/* Process Flow Architecture Segment */}
+        <section className="bg-white border border-slate-200 rounded-2xl shadow-sm p-6 sm:p-8 space-y-6">
+          <h2 className="text-lg font-bold text-slate-900 tracking-tight border-b border-slate-100 pb-3">Operational Framework</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            {/* Participant Journey */}
+            <div className="space-y-4">
+              <h3 className="text-sm font-bold text-sky-800 tracking-wider uppercase bg-sky-50 px-2.5 py-1 rounded-md inline-block">For Communities & Patients</h3>
+              <ol className="space-y-3">
+                {[
+                  "Discover decentralized health camps by functional category profiles.",
+                  "Lock in real-time drive registrations directly via local profile indices.",
+                  "Attend offline verified location coordinates for professional checkups.",
+                  "Claim validated crypto tokens instantly upon securing successful blood donation protocols.",
+                ].map((step, idx) => (
+                  <li key={idx} className="flex items-start gap-3 text-xs text-slate-600 leading-relaxed">
+                    <span className="w-5 h-5 flex items-center justify-center bg-sky-100 text-sky-700 rounded-full font-bold text-[10px] shrink-0 mt-0.5">{idx + 1}</span>
+                    <span>{step}</span>
+                  </li>
                 ))}
-              </div>
+              </ol>
             </div>
-          )}
 
-          {/* Info Section */}
-          <div className="info-section">
-            <h2 className="section-title">How It Works</h2>
-            <div className="info-grid">
-              <div>
-                <h3 className="info-title">For Participants</h3>
-                <ul className="info-list">
-                  <li>
-                    <span className="step blue">1</span>Browse available events
-                    by category
-                  </li>
-                  <li>
-                    <span className="step blue">2</span>Register for events that
-                    interest you
-                  </li>
-                  <li>
-                    <span className="step blue">3</span>Attend the event and get
-                    verified
-                  </li>
-                  <li>
-                    <span className="step blue">4</span>Receive rewards for
-                    blood donation events
-                  </li>
-                </ul>
+            {/* Organizer Journey */}
+            {canOrganize && (
+              <div className="space-y-4 border-t md:border-t-0 md:border-l border-slate-100 pt-6 md:pt-0 md:pl-8">
+                <h3 className="text-sm font-bold text-emerald-800 tracking-wider uppercase bg-emerald-50 px-2.5 py-1 rounded-md inline-block">For Accredited Event Organizers</h3>
+                <ol className="space-y-3">
+                  {[
+                    "Deploy specialized operational profiles tailored to clinical categories.",
+                    "Configure programmatic timeline limits, tracking constraints, and target geo-locations.",
+                    "Monitor ongoing dashboard participant registrations securely.",
+                    "Verify manual check-ins on-site to dispatch rewards directly onto blockchain records.",
+                  ].map((step, idx) => (
+                    <li key={idx} className="flex items-start gap-3 text-xs text-slate-600 leading-relaxed">
+                      <span className="w-5 h-5 flex items-center justify-center bg-emerald-100 text-emerald-700 rounded-full font-bold text-[10px] shrink-0 mt-0.5">{idx + 1}</span>
+                      <span>{step}</span>
+                    </li>
+                  ))}
+                </ol>
               </div>
-              {canOrganize && (
-                <div>
-                  <h3 className="info-title">For Organizers</h3>
-                  <ul className="info-list">
-                    <li>
-                      <span className="step green">1</span>Choose the type of
-                      event to organize
-                    </li>
-                    <li>
-                      <span className="step green">2</span>Fill in event details
-                      and schedule
-                    </li>
-                    <li>
-                      <span className="step green">3</span>Manage registrations
-                      and participants
-                    </li>
-                    <li>
-                      <span className="step green">4</span>Verify participants
-                      and distribute rewards
-                    </li>
-                  </ul>
-                </div>
-              )}
-            </div>
+            )}
           </div>
-        </div>
-      </div>
+        </section>
+      </main>
     </div>
   );
 };

@@ -96,12 +96,12 @@ export default function Dashboard() {
 
       <div className="mx-auto w-full max-w-[1200px] px-6 py-12 md:px-10">
         {/* ── Centered Page Title ── */}
-        <div className="mb-12 text-center">
+        {/* <div className="mb-12 text-center">
           <h1 className="text-4xl font-extrabold tracking-tight text-[#1A3C34] sm:text-5xl">
             Dashboard
           </h1>
           <div className="mx-auto mt-4 h-1 w-20 rounded-full bg-[#4CAF82]" />
-        </div>
+        </div> */}
 
         {/* ── Welcome Banner ── */}
         <div className="mb-12 overflow-hidden rounded-2xl bg-gradient-to-br from-[#1A3C34] via-[#2D7A5F] to-[#4CAF82] shadow-xl w-full">
