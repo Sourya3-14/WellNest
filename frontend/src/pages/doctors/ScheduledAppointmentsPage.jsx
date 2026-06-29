@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import api from "../utils/api.js";
-import Navbar from "../components/Navbar.jsx";
+import api from "../../utils/api.js";
+import Navbar from "../../components/Navbar.jsx";
 import { CalendarRange, ArrowLeft, AlertCircle, Loader2, Mail, Phone, MessageSquare, FileText, Clock, Video, RefreshCw, XCircle, StickyNote, History } from "lucide-react";
 
 export default function ScheduledAppointmentsPage() {

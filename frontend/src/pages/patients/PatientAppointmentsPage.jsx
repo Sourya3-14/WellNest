@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../../utils/api.js";
 import Navbar from "../../components/Navbar.jsx";
-import { CalendarDays, ArrowLeft, AlertCircle, Loader2, Video, XCircle, FileText, Clock, User, StickyNote, History } from "lucide-react";
+import { CalendarDays, ArrowLeft, AlertCircle, MessageCircle, Loader2, Video, XCircle, FileText, Clock, User, StickyNote, History } from "lucide-react";
 
 export default function PatientAppointmentsPage() {
   const [appointments, setAppointments] = useState([]);
@@ -84,6 +84,15 @@ export default function PatientAppointmentsPage() {
     navigate("/video-call");
   };
 
+  const handleOpenChat = (appointment) => {
+    navigate(`/chat/${appointment._id}`, {
+      state: {
+        appointment,
+        patientProfile,
+      },
+    });
+  };
+
   const handleLogout = () => {
     localStorage.removeItem("token");
     navigate("/signin");
@@ -112,7 +121,9 @@ export default function PatientAppointmentsPage() {
             Patient Ledger
           </div>
           <h1 className="text-2xl font-black tracking-tight text-[#1A3C34] sm:text-3xl">My Appointments</h1>
-          <p className="text-xs sm:text-sm font-medium text-[#4A7A6A] max-w-xl">Review and monitor your active health schedules, tracking pending requests, accepted windows, and digital telehealth access points.</p>
+          <p className="text-xs sm:text-sm font-medium text-[#4A7A6A] max-w-xl">
+            Review and monitor your active health schedules, tracking pending requests, accepted windows, and digital telehealth access points.
+          </p>
         </div>
         <button
           className="self-start md:self-center inline-flex items-center gap-2 rounded-xl border border-[#C8E6D8] bg-white px-4 py-2 text-xs font-extrabold text-[#4A7A6A] transition-all duration-200 hover:border-[#2D7A5F] hover:text-[#2D7A5F] hover:bg-[#2D7A5F]/5 active:scale-95 shadow-sm"
@@ -171,7 +182,10 @@ export default function PatientAppointmentsPage() {
           {statuses.map((s) => {
             const active = filter === s.key;
             return (
-              <button key={s.key} onClick={() => setFilter(s.key)} className={`rounded-xl px-4 py-2 text-xs font-extrabold transition-all duration-200 ${active ? "bg-[#2D7A5F] text-white shadow-sm" : "text-[#4A7A6A] hover:bg-white hover:text-[#1A3C34]"}`}>
+              <button
+                key={s.key}
+                onClick={() => setFilter(s.key)}
+                className={`rounded-xl px-4 py-2 text-xs font-extrabold transition-all duration-200 ${active ? "bg-[#2D7A5F] text-white shadow-sm" : "text-[#4A7A6A] hover:bg-white hover:text-[#1A3C34]"}`}>
                 {s.label}
               </button>
             );
@@ -187,7 +201,11 @@ export default function PatientAppointmentsPage() {
               </div>
               <div className="space-y-1">
                 <h3 className="text-sm font-black uppercase tracking-wide text-[#1A3C34]">No Sessions Logged</h3>
-                <p className="text-xs font-medium text-[#4A7A6A] leading-relaxed">{filter === "all" ? "You do not have any appointments recorded in this unified environment yet." : `There are currently no active appointments classified under the "${filter}" matrix status.`}</p>
+                <p className="text-xs font-medium text-[#4A7A6A] leading-relaxed">
+                  {filter === "all"
+                    ? "You do not have any appointments recorded in this unified environment yet."
+                    : `There are currently no active appointments classified under the "${filter}" matrix status.`}
+                </p>
               </div>
             </div>
           ) : (
@@ -195,7 +213,7 @@ export default function PatientAppointmentsPage() {
               {appointments.map((a) => {
                 const appointmentTime = new Date(a.scheduledTime || a.requestedTime);
                 const isPast = appointmentTime < new Date();
-                const canVideoCall = (a.status === "scheduled" || a.status === "accepted") && !isPast;
+                const canContact = (a.status === "scheduled" || a.status === "accepted") && !isPast;
 
                 // Match layout/color metrics to standard statuses
                 const getStatusStyles = (status) => {
@@ -211,7 +229,9 @@ export default function PatientAppointmentsPage() {
                 };
 
                 return (
-                  <div key={a._id} className="bg-white rounded-2xl border border-[#E8F5F0] p-6 shadow-sm hover:border-[#C8E6D8] hover:shadow-md transition-all duration-200 flex flex-col justify-between space-y-5">
+                  <div
+                    key={a._id}
+                    className="bg-white rounded-2xl border border-[#E8F5F0] p-6 shadow-sm hover:border-[#C8E6D8] hover:shadow-md transition-all duration-200 flex flex-col justify-between space-y-5">
                     <div className="space-y-4">
                       {/* Card Header */}
                       <div className="flex items-start justify-between gap-4 border-b border-[#F0F7F4] pb-3">
@@ -221,7 +241,9 @@ export default function PatientAppointmentsPage() {
                           </span>
                           <h3 className="text-base font-black text-[#1A3C34]">{a.doctorId?.name || `${a.doctorId?.user?.firstName || "Doctor"} ${a.doctorId?.user?.lastName || ""}`}</h3>
                         </div>
-                        <span className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-[10px] font-extrabold uppercase tracking-wide shadow-sm ${getStatusStyles(a.status)}`}>{a.status}</span>
+                        <span className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-[10px] font-extrabold uppercase tracking-wide shadow-sm ${getStatusStyles(a.status)}`}>
+                          {a.status}
+                        </span>
                       </div>
 
                       {/* Info Parameters Table Stack */}
@@ -259,7 +281,9 @@ export default function PatientAppointmentsPage() {
                     {/* Operational Actions Section */}
                     <div className="flex flex-col gap-2 pt-3 border-t border-[#F0F7F4]">
                       {a.status !== "cancelled" && !isPast && (
-                        <button className="w-full inline-flex items-center justify-center gap-1.5 rounded-xl border border-red-200 bg-white px-3 py-2.5 text-xs font-extrabold text-red-600 hover:bg-red-50 hover:border-red-300 transition-all active:scale-95" onClick={() => handleCancel(a._id)}>
+                        <button
+                          className="w-full inline-flex items-center justify-center gap-1.5 rounded-xl border border-red-200 bg-white px-3 py-2.5 text-xs font-extrabold text-red-600 hover:bg-red-50 hover:border-red-300 transition-all active:scale-95"
+                          onClick={() => handleCancel(a._id)}>
                           <XCircle size={13} />
                           Cancel Appointment
                         </button>
@@ -272,11 +296,22 @@ export default function PatientAppointmentsPage() {
                         </div>
                       )}
 
-                      {canVideoCall && (
-                        <button className="w-full inline-flex items-center justify-center gap-1.5 rounded-xl bg-[#2D7A5F] px-4 py-2.5 text-xs font-black text-white hover:bg-[#245F4A] active:scale-95 transition-all shadow-md" onClick={() => handleJoinVideoCall(a)}>
-                          <Video size={14} />
-                          Join Secure Telehealth Bridge
-                        </button>
+                      {canContact && (
+                        <div className="grid grid-cols-2 gap-2">
+                          <button
+                            className="inline-flex items-center justify-center gap-1.5 rounded-xl border border-[#2D7A5F] bg-white px-4 py-2.5 text-xs font-black text-[#2D7A5F] hover:bg-[#2D7A5F]/5 active:scale-95 transition-all"
+                            onClick={() => handleOpenChat(a)}>
+                            <MessageCircle size={14} />
+                            Chat
+                          </button>
+
+                          <button
+                            className="inline-flex items-center justify-center gap-1.5 rounded-xl bg-[#2D7A5F] px-4 py-2.5 text-xs font-black text-white hover:bg-[#245F4A] active:scale-95 transition-all shadow-md"
+                            onClick={() => handleJoinVideoCall(a)}>
+                            <Video size={14} />
+                            Video
+                          </button>
+                        </div>
                       )}
                     </div>
                   </div>

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import api from "../utils/api.js";
-import Navbar from "../components/Navbar.jsx";
+import api from "../../utils/api.js";
+import Navbar from "../../components/Navbar.jsx";
 import { CalendarClock, ArrowLeft, X, Sparkles, AlertCircle, Loader2, Mail, Phone, MessageSquare, FileText, Clock, CheckCircle2, XCircle } from "lucide-react";
 
 export default function PendingAppointmentsPage() {

@@ -6,6 +6,15 @@ const messageSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       required: true,
     },
+    senderName: {
+      type: String,
+      required: true,
+    },
+    senderRole: {
+      type: String,
+      enum: ["doctor", "patient"],
+      required: true,
+    },
     message: {
       type: String,
       required: true,
@@ -15,7 +24,7 @@ const messageSchema = new mongoose.Schema(
       default: Date.now,
     },
   },
-  { _id: false } // don't create a separate _id for each embedded message
+  { _id: false },
 );
 
 const chatSchema = new mongoose.Schema(
@@ -27,23 +36,21 @@ const chatSchema = new mongoose.Schema(
     },
     doctorId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Doctor",
+      ref: "DoctorProfile",
       required: true,
     },
     patientId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Patient",
+      ref: "PatientProfile",
       required: true,
     },
-    messages: [messageSchema], // embedded messages array
+    messages: [messageSchema],
     lastUpdated: {
       type: Date,
       default: Date.now,
     },
   },
-  { timestamps: true } // adds createdAt, updatedAt automatically
+  { timestamps: true },
 );
 
-const Chat = mongoose.model("Chat", chatSchema);
-
-export default Chat;
+export default mongoose.model("Chat", chatSchema);
